@@ -1,0 +1,81 @@
+<!-- rog/checkout/index.html -->
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ROG-CORE - Kostenlose Übergabe & Freude</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+        body { background-color: #050002; color: #ff003c; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        .top-bar { background-color: #0a0205; border-bottom: 2px solid #ff003c; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #990024; letter-spacing: 2px; }
+        .top-bar span { color: #ff003c; text-shadow: 0 0 8px rgba(255,0,60,0.6); }
+        .main-container { display: flex; flex: 1; height: calc(100vh - 41px); }
+        .gameplay-section { flex: 1.2; background: #000; position: relative; border-right: 2px solid #220008; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .simulation-canvas { width: 100%; height: 100%; background: radial-gradient(circle at center, #22000a 0%, #000000 90%); position: relative; }
+        .sim-grid { position: absolute; width: 300%; height: 300%; top: -100%; left: -100%; background-image: linear-gradient(rgba(255, 0, 60, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 0, 60, 0.08) 1px, transparent 1px); background-size: 30px 30px; transform: perspective(600px) rotateX(65deg); animation: gridMove 6s linear infinite; }
+        @keyframes gridMove { 0% { transform: perspective(600px) rotateX(65deg) translateY(0); } 100% { transform: perspective(600px) rotateX(65deg) translateY(30px); } }
+        .ai-core-pulse { position: absolute; width: 220px; height: 220px; background: rgba(255, 0, 60, 0.12); border-radius: 50%; box-shadow: 0 0 80px rgba(255, 0, 60, 0.5); animation: pulse 2.5s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.5); opacity: 0.9; } }
+        .floating-particles { position: absolute; width: 100%; height: 100%; background-image: radial-gradient(#ff003c 1px, transparent 1px); background-size: 50px 50px; animation: floatParticles 15s linear infinite; opacity: 0.3; }
+        @keyframes floatParticles { 0% { background-position: 0 0; } 100% { background-position: 100px 500px; } }
+        .watermark-ai { position: absolute; bottom: 20px; left: 20px; color: rgba(255, 0, 60, 0.5); font-size: 11px; text-transform: uppercase; letter-spacing: 3px; }
+        .success-section { flex: 1; background-color: #080204; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 10px 0 30px rgba(0,0,0,0.9); text-align: center; }
+        .success-logo { width: 70px; height: 70px; margin-bottom: 20px; filter: drop-shadow(0 0 12px rgba(255,0,60,0.6)); }
+        .success-logo img { width: 100%; height: 100%; object-fit: contain; }
+        .success-content h2 { color: #fff; font-size: 24px; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 10px; text-shadow: 0 0 12px rgba(255,0,60,0.5); }
+        .success-content p { color: #990024; font-size: 13px; margin-bottom: 25px; letter-spacing: 1px; line-height: 1.6; }
+        .order-details { background: #140508; border: 1px solid #440011; padding: 20px; width: 100%; max-width: 400px; margin-bottom: 25px; text-align: left; }
+        .order-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 8px; color: #990024; }
+        .order-row span:last-child { color: #fff; }
+        .order-row.total { border-top: 1px solid #33000c; padding-top: 10px; margin-top: 10px; font-size: 14px; color: #fff; font-weight: bold; }
+        .order-row.total span:last-child { color: #ff003c; text-shadow: 0 0 8px rgba(255,0,60,0.4); }
+        .home-btn { background: linear-gradient(135deg, #ff003c 0%, #990024 100%); color: #fff; border: none; padding: 18px 30px; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; box-shadow: 0 0 25px rgba(255, 0, 60, 0.4); transition: all 0.3s ease; text-decoration: none; display: inline-block; width: 100%; max-width: 400px; }
+        .home-btn:hover { background: linear-gradient(135deg, #ff3366, #cc0033); box-shadow: 0 0 40px rgba(255, 0, 60, 0.8); }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div>ROG COMMUNITY CARE: <span>ÜBERGABE ERFOLGREICH // 2048</span></div>
+        <div>NODE: <span>FRIENDLY_RESCUE_NODE</span></div>
+    </div>
+    <div class="main-container">
+        <div class="gameplay-section">
+            <div class="simulation-canvas">
+                <div class="sim-grid"></div>
+                <div class="floating-particles"></div>
+                <div class="ai-core-pulse"></div>
+            </div>
+            <div class="watermark-ai">ROG Community Support // Viel Freude damit!</div>
+        </div>
+        <div class="success-section">
+            <div class="success-content">
+                <div class="success-logo">
+                    <img src="../logo.png" alt="ROG Logo">
+                </div>
+                <h2>Viel Freude damit!</h2>
+                <p>Dein Hardware-Paket wurde komplett gesponsert und auf den Weg gebracht. Mach dir keine Gedanken über Kosten – lass es dir gut gehen!</p>
+                <div class="order-details">
+                    <div class="order-row">
+                        <span>Bestellnummer:</span>
+                        <span>#ROG-CARE-FREE</span>
+                    </div>
+                    <div class="order-row">
+                        <span>Hardware-Paket:</span>
+                        <span>ROG Einsteiger-GPU & 32GB RAM</span>
+                    </div>
+                    <div class="order-row">
+                        <span>Finanzieller Beitrag:</span>
+                        <span>0,00 € (Geschenk)</span>
+                    </div>
+                    <div class="order-row total">
+                        <span>Dein Endpreis:</span>
+                        <span>0,00 €</span>
+                    </div>
+                </div>
+                <a href="../../" class="home-btn">[ ZURÜCK ZUM HAUPTTERMINAL ]</a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

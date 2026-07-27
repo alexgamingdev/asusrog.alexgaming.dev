@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%">
+  <defs>
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00f0ff" stop-opacity="0.8"/>
+      <stop offset="50%" stop-color="#007788" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#020205" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="cyberLine" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#003344"/>
+    </linearGradient>
+    <filter id="neonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="8" result="blur"/>
+      <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+    </filter>
+  </defs>
+
+  <rect width="500" height="500" fill="#020205" rx="40"/>
+
+  <g transform="translate(250, 250)">
+    <!-- Background Grid Circles -->
+    <circle r="180" fill="none" stroke="#003344" stroke-width="1" stroke-dasharray="4 8" opacity="0.6"/>
+    <circle r="130" fill="none" stroke="#00f0ff" stroke-width="1.5" opacity="0.3"/>
+    <circle r="80" fill="none" stroke="#00f0ff" stroke-width="1" opacity="0.4"/>
+
+    <!-- Ambient Core Glow -->
+    <circle r="100" fill="url(#coreGlow)"/>
+
+    <!-- Neural Circuit Connections -->
+    <g stroke="url(#cyberLine)" stroke-width="2.5" fill="none" filter="url(#neonGlow)">
+      <path d="M 0 -130 L 0 -80 L 60 -20 L 130 -20"/>
+      <path d="M 130 20 L 70 20 L 20 70 L 20 130"/>
+      <path d="M 0 130 L 0 90 L -50 40 L -130 40"/>
+      <path d="M -130 -40 L -70 -40 L -20 -90 L -20 -130"/>
+    </g>
+
+    <!-- Node Junction Points (Outer) -->
+    <circle cx="130" cy="-20" r="5" fill="#00f0ff" filter="url(#neonGlow)"/>
+    <circle cx="20" cy="130" r="5" fill="#00f0ff" filter="url(#neonGlow)"/>
+    <circle cx="-130" cy="40" r="5" fill="#00f0ff" filter="url(#neonGlow)"/>
+    <circle cx="-20" cy="-130" r="5" fill="#00f0ff" filter="url(#neonGlow)"/>
+
+    <!-- Central Hexagonal Core -->
+    <polygon points="0,-60 52,-30 52,30 0,60 -52,30 -52,-30" fill="#040408" stroke="#00f0ff" stroke-width="3" filter="url(#neonGlow)"/>
+    
+    <!-- Inner Neural Hub -->
+    <polygon points="0,-35 30,-18 30,18 0,35 -30,18 -30,-18" fill="#080c14" stroke="#33f3ff" stroke-width="1.5"/>
+    
+    <!-- Core Pulse Center -->
+    <circle cx="0" cy="0" r="12" fill="#00f0ff" filter="url(#neonGlow)"/>
+    <circle cx="0" cy="0" r="5" fill="#ffffff"/>
+  </g>
+</svg>

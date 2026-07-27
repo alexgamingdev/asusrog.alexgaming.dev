@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL-CORE 2048 - Checkout Terminal</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+        body { background-color: #020205; color: #00f0ff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        .top-bar { background-color: #05050a; border-bottom: 2px solid #00f0ff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #008899; letter-spacing: 2px; }
+        .top-bar span { color: #00f0ff; text-shadow: 0 0 8px rgba(0,240,255,0.6); }
+        .main-container { display: flex; flex: 1; height: calc(100vh - 41px); position: relative; }
+        .gameplay-section { flex: 1.2; background: #000; position: relative; border-right: 2px solid #001522; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .simulation-canvas { width: 100%; height: 100%; background: radial-gradient(circle at center, #001122 0%, #000002 90%); position: relative; }
+        .sim-grid { position: absolute; width: 300%; height: 300%; top: -100%; left: -100%; background-image: linear-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 240, 255, 0.08) 1px, transparent 1px); background-size: 30px 30px; transform: perspective(600px) rotateX(65deg); animation: gridMove 6s linear infinite; }
+        @keyframes gridMove { 0% { transform: perspective(600px) rotateX(65deg) translateY(0); } 100% { transform: perspective(600px) rotateX(65deg) translateY(30px); } }
+        .ai-core-pulse { position: absolute; width: 220px; height: 220px; background: rgba(0, 240, 255, 0.1); border-radius: 50%; box-shadow: 0 0 80px rgba(0, 240, 255, 0.4); animation: pulse 2.5s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.5); opacity: 0.8; } }
+        .floating-particles { position: absolute; width: 100%; height: 100%; background-image: radial-gradient(#00f0ff 1px, transparent 1px); background-size: 50px 50px; animation: floatParticles 15s linear infinite; opacity: 0.3; }
+        @keyframes floatParticles { 0% { background-position: 0 0; } 100% { background-position: 100px 500px; } }
+        .watermark-ai { position: absolute; bottom: 20px; left: 20px; color: rgba(0, 240, 255, 0.5); font-size: 11px; text-transform: uppercase; letter-spacing: 3px; }
+        .checkout-section { flex: 1; background-color: #040408; padding: 40px; display: flex; flex-direction: column; justify-content: center; align-items: center; box-shadow: inset 10px 0 30px rgba(0,0,0,0.9); text-align: center; }
+        .checkout-logo { width: 70px; height: 70px; margin-bottom: 15px; filter: drop-shadow(0 0 10px rgba(0,240,255,0.4)); }
+        .checkout-logo img { width: 100%; height: 100%; object-fit: contain; }
+        .checkout-content h2 { color: #fff; font-size: 22px; text-transform: uppercase; letter-spacing: 3px; margin-bottom: 8px; text-shadow: 0 0 10px rgba(0,240,255,0.4); }
+        .checkout-content p { color: #008899; font-size: 12px; margin-bottom: 25px; letter-spacing: 1px; }
+        .payment-options { display: flex; gap: 15px; width: 100%; max-width: 400px; margin-bottom: 25px; }
+        .payment-card { flex: 1; background: #080c14; border: 2px solid #003344; padding: 15px; cursor: pointer; transition: all 0.3s ease; text-align: left; }
+        .payment-card input[type="radio"] { accent-color: #00f0ff; margin-bottom: 8px; }
+        .payment-card h4 { color: #fff; font-size: 13px; margin-bottom: 3px; }
+        .payment-card span { color: #008899; font-size: 10px; display: block; }
+        .payment-card.selected { border-color: #00f0ff; background: #0c1424; box-shadow: 0 0 15px rgba(0,240,255,0.2); }
+        .action-btn { background: linear-gradient(135deg, #00f0ff 0%, #007788 100%); color: #000; border: none; padding: 18px 30px; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; box-shadow: 0 0 25px rgba(0, 240, 255, 0.4); transition: all 0.3s ease; width: 100%; max-width: 400px; }
+        .action-btn:hover { background: linear-gradient(135deg, #33f3ff, #0099aa); box-shadow: 0 0 40px rgba(0, 240, 255, 0.8); }
+        .flash-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: white; opacity: 0; pointer-events: none; transition: opacity 0.1s ease; z-index: 9999; }
+        .flash-overlay.active { opacity: 1; }
+        .terminal-init-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+        .terminal-init-screen.active { opacity: 1; pointer-events: auto; }
+        .terminal-text { color: #ff003c; font-size: 18px; letter-spacing: 2px; margin-bottom: 20px; text-shadow: 0 0 12px rgba(255, 0, 60, 0.6); text-align: center; padding: 0 20px; }
+        .loading-bar-container { width: 400px; height: 6px; background: #020810; border: 1px solid #330011; position: relative; overflow: hidden; }
+        .loading-bar-fill { position: absolute; top: 0; left: 0; height: 100%; width: 0%; background: #ff003c; box-shadow: 0 0 15px #ff003c; transition: width 2.5s cubic-bezier(0.1, 0.8, 0.3, 1); }
+    </style>
+</head>
+<body>
+    <div class="flash-overlay" id="flashOverlay"></div>
+    <div class="top-bar">
+        <div>CHECKOUT GATEWAY: <span>TRANSACTION READY // 2048</span></div>
+        <div>NODE: <span>SECURE_TERMINAL_09</span></div>
+    </div>
+    <div class="main-container">
+        <div class="gameplay-section">
+            <div class="simulation-canvas">
+                <div class="sim-grid"></div>
+                <div class="floating-particles"></div>
+                <div class="ai-core-pulse"></div>
+            </div>
+            <div class="watermark-ai">Neural Engine v14.0 // Execution Pipeline</div>
+        </div>
+        <div class="checkout-section">
+            <div class="checkout-content">
+                <div class="checkout-logo">
+                    <img src="../logo.svg" alt="Neural Core Logo">
+                </div>
+                <h2>Zahlungsmethode wählen</h2>
+                <p>Wählen Sie Ihre Transaktionswährung für das 2.512.500,00 € Investment</p>
+                <div class="payment-options">
+                    <label class="payment-card selected" id="labelGld">
+                        <input type="radio" name="payment" value="gld" checked>
+                        <h4>GLD</h4>
+                        <span>Digitale Fiat-Liquidität</span>
+                    </label>
+                    <label class="payment-card" id="labelOrgan">
+                        <input type="radio" name="payment" value="organ">
+                        <h4>Organe</h4>
+                        <span>Biologische Pfändung</span>
+                    </label>
+                </div>
+                <button class="action-btn" id="confirmBtn">[ KAUF BESTÄTIGEN ]</button>
+            </div>
+        </div>
+    </div>
+    <div class="terminal-init-screen" id="initScreen">
+        <div class="terminal-text" id="termText">[ WARNUNG: SYSTEM-ÜBERLASTUNG // GELD-/ORGAN-RESERVEN UNREICHEND. UMLEITUNG ZU GÜNSTIGEREN ALTERNATIVEN... ]</div>
+        <div class="loading-bar-container">
+            <div class="loading-bar-fill" id="loadBar"></div>
+        </div>
+    </div>
+    <script>
+        const confirmBtn = document.getElementById('confirmBtn');
+        const flashOverlay = document.getElementById('flashOverlay');
+        const initScreen = document.getElementById('initScreen');
+        const loadBar = document.getElementById('loadBar');
+        const labelGld = document.getElementById('labelGld');
+        const labelOrgan = document.getElementById('labelOrgan');
+        const radios = document.querySelectorAll('input[name="payment"]');
+
+        radios.forEach(radio => {
+            radio.addEventListener('change', (e) => {
+                if(e.target.value === 'gld') {
+                    labelGld.classList.add('selected');
+                    labelOrgan.classList.remove('selected');
+                } else {
+                    labelOrgan.classList.add('selected');
+                    labelGld.classList.remove('selected');
+                }
+            });
+        });
+
+        confirmBtn.addEventListener('click', () => {
+            flashOverlay.classList.add('active');
+            setTimeout(() => { flashOverlay.classList.remove('active'); }, 150);
+            setTimeout(() => {
+                initScreen.classList.add('active');
+                setTimeout(() => { loadBar.style.width = '100%'; }, 100);
+            }, 300);
+            setTimeout(() => {
+                window.location.href = '../rog/';
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEURAL-CORE 2048 - Warenkorb</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Courier New', Courier, monospace; }
+        body { background-color: #020205; color: #00f0ff; height: 100vh; overflow: hidden; display: flex; flex-direction: column; }
+        .top-bar { background-color: #05050a; border-bottom: 2px solid #00f0ff; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: #008899; letter-spacing: 2px; }
+        .top-bar span { color: #00f0ff; text-shadow: 0 0 8px rgba(0,240,255,0.6); }
+        .main-container { display: flex; flex: 1; height: calc(100vh - 41px); }
+        .gameplay-section { flex: 1.2; background: #000; position: relative; border-right: 2px solid #001522; overflow: hidden; display: flex; justify-content: center; align-items: center; }
+        .simulation-canvas { width: 100%; height: 100%; background: radial-gradient(circle at center, #001122 0%, #000002 90%); position: relative; }
+        .sim-grid { position: absolute; width: 300%; height: 300%; top: -100%; left: -100%; background-image: linear-gradient(rgba(0, 240, 255, 0.08) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 240, 255, 0.08) 1px, transparent 1px); background-size: 30px 30px; transform: perspective(600px) rotateX(65deg); animation: gridMove 6s linear infinite; }
+        @keyframes gridMove { 0% { transform: perspective(600px) rotateX(65deg) translateY(0); } 100% { transform: perspective(600px) rotateX(65deg) translateY(30px); } }
+        .ai-core-pulse { position: absolute; width: 220px; height: 220px; background: rgba(0, 240, 255, 0.1); border-radius: 50%; box-shadow: 0 0 80px rgba(0, 240, 255, 0.4); animation: pulse 2.5s ease-in-out infinite; }
+        @keyframes pulse { 0%, 100% { transform: scale(1); opacity: 0.4; } 50% { transform: scale(1.5); opacity: 0.8; } }
+        .floating-particles { position: absolute; width: 100%; height: 100%; background-image: radial-gradient(#00f0ff 1px, transparent 1px); background-size: 50px 50px; animation: floatParticles 15s linear infinite; opacity: 0.3; }
+        @keyframes floatParticles { 0% { background-position: 0 0; } 100% { background-position: 100px 500px; } }
+        .watermark-ai { position: absolute; bottom: 20px; left: 20px; color: rgba(0, 240, 255, 0.5); font-size: 11px; text-transform: uppercase; letter-spacing: 3px; }
+        .cart-section { flex: 1; background-color: #040408; padding: 30px 40px; display: flex; flex-direction: column; justify-content: space-between; box-shadow: inset 10px 0 30px rgba(0,0,0,0.9); }
+        .cart-header-wrapper { display: flex; align-items: center; gap: 15px; }
+        .cart-logo { width: 50px; height: 50px; filter: drop-shadow(0 0 8px rgba(0,240,255,0.4)); flex-shrink: 0; }
+        .cart-logo img { width: 100%; height: 100%; object-fit: contain; }
+        .cart-header h2 { color: #fff; font-size: 20px; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 3px; border-left: 4px solid #00f0ff; padding-left: 10px; text-shadow: 0 0 10px rgba(0,240,255,0.4); }
+        .cart-header p { color: #008899; font-size: 11px; }
+        .cart-items { margin: 15px 0; display: flex; flex-direction: column; gap: 12px; }
+        .cart-item { background: #080c14; border: 1px solid #003344; padding: 12px 15px; display: flex; justify-content: space-between; align-items: center; transition: border-color 0.3s; }
+        .cart-item:hover { border-color: #00f0ff; }
+        .item-info h4 { color: #fff; font-size: 13px; margin-bottom: 2px; }
+        .item-info span { color: #008899; font-size: 10px; }
+        .item-price { color: #00f0ff; font-weight: bold; font-size: 14px; text-shadow: 0 0 8px rgba(0,240,255,0.4); }
+        .cart-summary { background: #060912; border: 1px solid #002233; padding: 15px 20px; margin-bottom: 15px; }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 12px; color: #008899; }
+        .summary-row.total { border-top: 1px solid #002233; padding-top: 12px; margin-top: 8px; font-size: 16px; color: #fff; font-weight: bold; }
+        .summary-row.total span:last-child { color: #00f0ff; text-shadow: 0 0 12px rgba(0, 240, 255, 0.6); }
+        .checkout-btn { background: linear-gradient(135deg, #00f0ff 0%, #007788 100%); color: #000; border: none; padding: 16px; font-size: 16px; font-weight: bold; text-transform: uppercase; letter-spacing: 3px; cursor: pointer; width: 100%; box-shadow: 0 0 25px rgba(0, 240, 255, 0.4); transition: all 0.2s ease; text-decoration: none; display: block; text-align: center; }
+        .checkout-btn:hover { background: linear-gradient(135deg, #33f3ff, #0099aa); box-shadow: 0 0 35px rgba(0, 240, 255, 0.8); }
+    </style>
+</head>
+<body>
+    <div class="top-bar">
+        <div>SYSTEM STATUS: <span>SECURE_ENCRYPTED // 2048</span></div>
+        <div>USER: <span>ALEXGAMINGDEV // 2048-CORE</span></div>
+    </div>
+    <div class="main-container">
+        <div class="gameplay-section">
+            <div class="simulation-canvas">
+                <div class="sim-grid"></div>
+                <div class="floating-particles"></div>
+                <div class="ai-core-pulse"></div>
+            </div>
+            <div class="watermark-ai">AI-Engine: Neural-Sim v14.0 // 240 FPS Locked</div>
+        </div>
+        <div class="cart-section">
+            <div class="cart-header-wrapper">
+                <div class="cart-logo">
+                    <img src="../logo.svg" alt="Neural Core Logo">
+                </div>
+                <div class="cart-header">
+                    <h2>Warenkorb</h2>
+                    <p>Zentrales Beschaffungsportal // Level-9 Clearance</p>
+                </div>
+            </div>
+            <div class="cart-items">
+                <div class="cart-item">
+                    <div class="item-info">
+                        <h4>Einsteiger-GPU (Unbezahlbare Basisklasse)</h4>
+                        <span>PCIe 9.0 // Quantum Tensor Core</span>
+                    </div>
+                    <div class="item-price">12.500,00 €</div>
+                </div>
+                <div class="cart-item">
+                    <div class="item-info">
+                        <h4>8 GB RAM (High-Density Singularity)</h4>
+                        <span>Zero-Latency Neural Module</span>
+                    </div>
+                    <div class="item-price">2.500.000,00 €</div>
+                </div>
+            </div>
+            <div class="cart-summary">
+                <div class="summary-row">
+                    <span>Zwischensumme:</span>
+                    <span>2.512.500,00 €</span>
+                </div>
+                <div class="summary-row">
+                    <span>System-Steuer (KI-Lizenz):</span>
+                    <span>0,00 €</span>
+                </div>
+                <div class="summary-row total">
+                    <span>Gesamtsumme:</span>
+                    <span>2.512.500,00 €</span>
+                </div>
+            </div>
+            <a href="../checkout/" class="checkout-btn">[ KAUF BESTÄTIGEN ]</a>
+        </div>
+    </div>
+</body>
+</html>
